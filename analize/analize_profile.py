@@ -1,5 +1,5 @@
-from profile_actions import ProfileActions
-from utils import print_object
+from analize.profile_actions import ProfileActions
+from analize.utils import print_object
 
 
 class ProfileAnalizer:

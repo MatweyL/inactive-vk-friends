@@ -2,7 +2,7 @@ import vk
 import time
 
 from dotenv_utils import get_access_token
-from utils import print_access_token_getting_url, print_object
+from analize.utils import print_access_token_getting_url, print_object
 
 
 def correct_request(func):

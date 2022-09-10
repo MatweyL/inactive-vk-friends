@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Анализ профиля ВК</title>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+          <h1 class="title">Анализ активности пользователей в профиле ВК</h1>
+          <p class="subtitle">Просмотр статистики страницы в удобном формате</p>
+          <form class="field", method="POST">
+            <label class="label">Ссылка на страницу пользователя ВК</label>
+            <div class="control">
+              <input class="input" type="text" name="profile_link" placeholder="https://vk.com/...">
+            </div>
+            <button class="button is-link mt-3">Анализ</button>
+        </form>
+        </div>
+        {% if result %}
+            <div class="container">
+                <h2 class="title is-3 mt-5">Результат</h2>
+                <p class="subtitle">{{ result.message }}</p>
+                {% if result.unliked_users_profiles %}
+                    {% set len = (result.unliked_users_profiles|length/2)|round(method='floor')|string %}
+                    {% set half_len = len.replace(".0", '')|int %}
+                    <div class="columns">
+                        <div class="column">
+                            {% for user in result.unliked_users_profiles[:half_len] %}
+                            <div class="box">
+                                <article class="media">
+                                <div class="media-left">
+                                    <figure class="image is-64x64">
+                                    <img src={{ user.photo_100 }} alt="Image">
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <div class="content">
+                                    <p>
+                                        <strong><a href="https://vk.com/id{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></strong></small>
+                                    </p>
+                                    </div>
+                                </div>
+                                </article>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="column">
+                            {% for user in result.unliked_users_profiles[half_len:] %}
+                            <div class="box">
+                                <article class="media">
+                                <div class="media-left">
+                                    <figure class="image is-64x64">
+                                    <img src={{ user.photo_100 }} alt="Image">
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <div class="content">
+                                    <p>
+                                        <strong><a href="https://vk.com/id{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></strong></small>
+                                    </p>
+                                    </div>
+                                </div>
+                                </article>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+      </section>
+</body>
+</html>
