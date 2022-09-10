@@ -21,7 +21,7 @@ class ProfileAnalizer:
         return self.api_wrapper.get_friends(user_id)
 
     def get_photos_liked_users(self, username, detailed=False) -> dict:
-        photos_liked_users = {}
+        photos_liked_users = dict()
         user_id = self.api_wrapper.get_id_from_screen_name(username)
         photos = self.api_wrapper.get_photos(user_id)
         photos_liked_users["photos_count"] = len(photos)
@@ -40,9 +40,13 @@ class ProfileAnalizer:
                     photos_liked_users[photo_liked_user] += 1
         return photos_liked_users
 
-    def get_unliked_users(self, username, liked_users: list[int]) -> list[int]:
-        friends = set(self.get_friends(username))
-        return list(friends.difference(liked_users))
+    def get_unliked_users(self, username, liked_users) -> list[int]:
+        unliked_users = []
+        friends = self.get_friends(username)
+        for friend in friends:
+            if friend not in liked_users.keys():
+                unliked_users.append(friend)
+        return unliked_users
 
     def analize_by_photos(self, screen_name: str):
         result_dict = {"message": None, "success": True}
@@ -51,6 +55,7 @@ class ProfileAnalizer:
             result_dict["success"] = False
             return result_dict
         liked_users = self.get_photos_liked_users(screen_name)
+        # print(liked_users)
         unliked_users_ids = self.get_unliked_users(screen_name, liked_users)
         unliked_users_profiles = self.api_wrapper.get_users_info(user_ids=unliked_users_ids)
         result_dict["message"] = f"Найдено {len(unliked_users_ids)} пользователей, не проявивших активности"

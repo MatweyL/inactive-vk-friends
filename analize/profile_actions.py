@@ -52,8 +52,8 @@ class ProfileActions:
         return self.vk_api.photos.getAll(owner_id=user_id, count=count)['items']
 
     @correct_request
-    def get_item_liked_users(self, user_id, type, item_id):
-        return self.vk_api.likes.getList(type=type, owner_id=user_id, item_id=item_id)['items']
+    def get_item_liked_users(self, user_id, type, item_id, count=1000):
+        return self.vk_api.likes.getList(type=type, owner_id=user_id, item_id=item_id, count=1000)['items']
 
     @correct_request
     def get_friends(self, user_id):
