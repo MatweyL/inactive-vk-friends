@@ -26,5 +26,13 @@ def get_api_id():
     return os.environ.get("API_ID")
 
 
+def get_host():
+    return os.environ.get("APP_HOST")
+
+
+def get_port():
+    return os.environ.get("APP_PORT")
+
+
 if __name__ == "__main__":
     print(get_project_root())
