@@ -8,29 +8,40 @@ from utils import print_access_token_getting_url, print_object
 def correct_request(func):
 
     def wrapper(*args, **kwargs):
+        start = time.time()
         time.sleep(0.34)
-        return func(*args, **kwargs)
+        result =  func(*args, **kwargs)
+        end = time.time()
+        print(f"execution time: {round(end - start, 4)} s ({func.__name__})")
+        return result
 
     return wrapper
 
 class ProfileActions:
 
-    def __init__(self, access_token):
-        self.access_token = access_token
-        self.vk_api = vk.API(access_token=access_token, v="5.131")
+    def __init__(self):
+        self.vk_api = vk.API(access_token=get_access_token(), v="5.131")
 
     @correct_request
-    def get_id_from_screen_name(self, screen_name):
+    def get_id_from_screen_name(self, screen_name):  # need to add cache .sqlite3 to decrease api requests
         return self.vk_api.utils.resolveScreenName(screen_name=screen_name)['object_id']
 
     @correct_request
-    def is_user_profile_accessable(self, user_id):
-        user_info = self.vk_api.users.get(user_ids=user_id, fields="blacklisted, is_friend")[0]
-        if (user_info.get('deactivated') or
-            user_info["blacklisted"] != 0 or
-            user_info["is_closed"] == True and user_info['is_friend'] == 0):
-            return False
-        return True
+    def get_user_info(self, user_id: int = None, screen_name: str = None, fields="blacklisted, is_friend"):
+        using_id=None
+        if user_id:
+            using_id = user_id
+        else:
+            using_id = screen_name
+        user_info =  self.vk_api.users.get(user_ids=using_id, fields=fields)
+        if user_info:
+            return user_info[0]
+        return None
+
+    @correct_request
+    def get_users_info(self, user_ids: list[int], fields="photo_100"):
+        users_info = self.vk_api.users.get(user_ids=user_ids, fields=fields)
+        return users_info
     
     @correct_request
     def get_wall_media(self, user_id, count=100):
@@ -48,26 +59,11 @@ class ProfileActions:
     def get_friends(self, user_id):
         return self.vk_api.friends.get(user_id=user_id)['items']
 
-    def get_photos_liked_users(self, user_id, count=100):
-        liked_users = {}
-        photos = self.get_photos(user_id, count=count)
-        for photo in photos['items']:
-            current_post_liked_users = self.vk_api.likes.getList(type=photo, owner_id=user_id, item_id=photo['id'])['items']
-            for user in current_post_liked_users:
-                if liked_users.get(user):
-                    liked_users[user].append(photo['id'])
-                else:
-                    liked_users[user] = [photo['id']]
-        return liked_users
-
 
 if __name__ == "__main__":
     try:
-        pa = ProfileActions(get_access_token())
-        user_id = pa.get_id_from_screen_name("lomchik_m")
-        # print_object(pa.get_photos(user_id, count=1))
-        print_object(pa.get_videos(user_id))
-        # print(pa.is_user_profile_accessable(user_id))
+        pa = ProfileActions()
+        print_object(pa.get_users_info("zheltov96"))
     except vk.exceptions.VkAPIError as e:
         print(e)
         print_access_token_getting_url()
