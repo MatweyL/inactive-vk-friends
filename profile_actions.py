@@ -6,13 +6,13 @@ from utils import print_access_token_getting_url, print_object
 
 
 def correct_request(func):
-
-    def wrapper(*args, **kwargs):
+    base_timeout = 0.3
+    def wrapper(*args, base_timeout=base_timeout, **kwargs):
+        time.sleep(base_timeout)
         start = time.time()
-        time.sleep(0.34)
         result =  func(*args, **kwargs)
-        end = time.time()
-        print(f"execution time: {round(end - start, 4)} s ({func.__name__})")
+        exec_time = round(time.time() - start, 4)
+        print(f"{func.__name__}: execution: {exec_time} s; sleep: {base_timeout} s; total: {exec_time + 0.3} s")
         return result
 
     return wrapper
@@ -63,7 +63,7 @@ class ProfileActions:
 if __name__ == "__main__":
     try:
         pa = ProfileActions()
-        print_object(pa.get_users_info("zheltov96"))
+        print(pa.get_users_info("lomchik_m"))
     except vk.exceptions.VkAPIError as e:
         print(e)
         print_access_token_getting_url()
