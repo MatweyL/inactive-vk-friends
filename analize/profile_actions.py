@@ -6,7 +6,7 @@ from analize.utils import print_access_token_getting_url, print_object
 
 
 def correct_request(func):
-    base_timeout = 0.3
+    base_timeout = 0.4
     def wrapper(*args, base_timeout=base_timeout, **kwargs):
         time.sleep(base_timeout)
         start = time.time()
